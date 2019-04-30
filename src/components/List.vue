@@ -2,14 +2,14 @@
 .section
   .container
     .level.is-mobile(grouped, group-multiline)
-      .control.level-left
-        .level-item(v-for="(rare, i) in Object.keys(showRares)", :key="i")
+      .control.level-left.rare-switch
+        .level-item.is-narrow(v-for="(rare, i) in Object.keys(showRares)", :key="i")
           b-switch(v-model="showRares[rare]") {{ rare }}
       .control.level-right
         .level-item
           b-button(type="is-danger" outlined @click="hanleReset") Reset
-    .level.is-mobile
-      .level-item.list(v-for="(rare, i) in Object.keys(showRares)",
+    .level.is-mobile.list-container
+      .level-item.is-narrow.list(v-for="(rare, i) in Object.keys(showRares)",
          :key="i",
          :class="`list-${rare}`"
         v-if="showRares[rare]")
@@ -56,6 +56,13 @@ export default {
 .section {
   padding-top: 1rem;
 }
+.rare-switch {
+  flex-wrap: wrap;
+  max-width: 80%;
+}
+.rare-switch > .level-item {
+  margin-bottom: 0.5rem !important;
+}
 .list-R {
   background: #e1f3ff;
 }
@@ -74,10 +81,21 @@ export default {
 .level {
   align-items: flex-start;
 }
+.list-container {
+  flex-wrap: wrap;
+}
 .list {
   flex-direction: column;
   align-items: flex-start;
   padding: 0.5rem;
+  max-width: 50%;
+  flex-grow: 1;
+  margin-bottom: 2rem !important;
+}
+@media (max-width: 375px) {
+  .list:nth-child(2n) {
+    margin-right: 0 !important;
+  }
 }
 .char + .char {
   margin-top: 0.5rem;
