@@ -13,10 +13,13 @@ const DEFAULT_DATA = Object.entries(CHAR_DATA).reduce((accu, [rare, list]) => {
 }, []);
 
 let data = DEFAULT_DATA;
-const log = localStorage.getItem("data");
+const logData = JSON.parse(localStorage.getItem("data") || "[]");
 
-if (log) {
-  data = JSON.parse(log);
+if (logData.length) {
+  data = DEFAULT_DATA.map(dat => {
+    dat.completed = logData[dat.id].completed;
+    return dat;
+  });
 }
 
 export default new Vuex.Store({
