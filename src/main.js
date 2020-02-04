@@ -1,23 +1,22 @@
 import Vue from "vue";
 import App from "./App.vue";
 import store from "./store";
-import Table from "buefy/dist/components/table";
-import Field from "buefy/dist/components/field";
-import Switch from "buefy/dist/components/switch";
-import Button from "buefy/dist/components/button";
-import Toast from "buefy/dist/components/toast";
-import Navbar from "buefy/dist/components/navbar";
+import Buefy from "buefy";
 import "buefy/dist/buefy.css";
 import InstantSearch from "vue-instantsearch";
 
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+library.add(faSearch);
+
 Vue.config.productionTip = false;
-Vue.use(Navbar);
-Vue.use(Table);
-Vue.use(Field);
-Vue.use(Switch);
-Vue.use(Button);
-Vue.use(Toast);
+Vue.use(Buefy, {
+  defaultIconComponent: "vue-fontawesome",
+  defaultIconPack: "fas"
+});
 Vue.use(InstantSearch);
+Vue.component("vue-fontawesome", FontAwesomeIcon);
 
 new Vue({
   store,

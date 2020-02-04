@@ -9,33 +9,20 @@
     </h1>
     <div class="navbar-item">
       <ais-instant-search :search-client="searchClient" index-name="characters">
-        <ais-autocomplete>
-          <div slot-scope="{ currentRefinement, indices, refine }">
+        <ais-autocomplete :class-names="{'ais-Autocomplete': 'control has-icons-left'}">
+          <template slot-scope="{ currentRefinement, indices, refine }">
             <input
+              class="input"
               type="search"
               :value="currentRefinement"
               placeholder="Input name..."
               autocomplete="off"
               @input="refine($event.currentTarget.value)"
             >
-            <div v-if="currentRefinement">
-              <b-navbar-dropdown
-                arrowless
-                hoverable
-                active
-                aria-role="list"
-                class="is-mobile"
-                v-for="index in indices"
-                :key="index.label"
-              >
-                <b-navbar-item
-                  aria-role="listitem"
-                  v-for="hit in index.hits"
-                  :key="hit.name"
-                >{{hit.name}}</b-navbar-item>
-              </b-navbar-dropdown>
-            </div>
-          </div>
+            <span class="icon is-small is-left">
+              <b-icon icon="search" size="is-small"></b-icon>
+            </span>
+          </template>
         </ais-autocomplete>
       </ais-instant-search>
     </div>
