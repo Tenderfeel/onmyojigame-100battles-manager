@@ -31,7 +31,12 @@ export default new Vuex.Store({
       return Object.keys(CHAR_DATA);
     }
   },
-  actions: {},
+  actions: {
+    reset({ commit, state }) {
+      commit("resetData");
+      localStorage.setItem("data", JSON.stringify(state.data));
+    }
+  },
   mutations: {
     resetData(state) {
       state.data.forEach(dat => {

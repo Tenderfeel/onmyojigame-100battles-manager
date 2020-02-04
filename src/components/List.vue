@@ -1,23 +1,73 @@
-<template lang="pug">
-.section
-  .container
-    .level.is-mobile(grouped, group-multiline)
-      .control.level-left.rare-switch
-        .level-item.is-narrow(v-for="(rare, i) in Object.keys(showRares)", :key="i")
-          b-switch(v-model="showRares[rare]") {{ rare }}
-      .control.level-right
-        .level-item
-          b-button(type="is-danger" outlined @click="hanleReset") Reset
-    .level.is-mobile.list-container
-      .level-item.is-narrow.list(v-for="(rare, i) in Object.keys(showRares)",
-         :key="i",
-         :class="`list-${rare}`"
-        v-if="showRares[rare]")
-        char-name(
-          v-for="(char, i) in data.filter(dat => dat.rare === rare).sort((a, b) => a.completed - b.completed)",
-          :char="char", :key="i", @click.native="handleClick(char)")
+<template>
+  <div class="section">
+    <div class="container">
+      <div class="level is-mobile" grouped="grouped" group-multiline="group-multiline">
+        <ais-instant-search :search-client="searchClient" index-name="characters">
+          <ais-autocomplete :class-names="{'ais-Autocomplete': 'control has-icons-left'}">
+            <template slot-scope="{ currentRefinement, indices, refine }">
+              <input
+                class="input"
+                type="search"
+                :value="currentRefinement"
+                placeholder="Search..."
+                autocomplete="off"
+                @input="refine($event.currentTarget.value)"
+              >
+              <span class="icon is-small is-left">
+                <b-icon icon="search" size="is-small"></b-icon>
+              </span>
+            </template>
+          </ais-autocomplete>
+
+          <ais-refinement-list attribute="rare">
+            <div slot-scope="{ items, createURL, refine }">
+              <div class="control level-left rare-switch">
+                <div
+                  class="level-item is-narrow"
+                  v-for="item in items"
+                  :key="item.value"
+                  @click.prevent="refine(item.value)"
+                >
+                  <b-switch v-model="item.isRefined" :class="{'has-text-primary': item.isRefined}">
+                    <span>{{ item.value }}</span>
+                    <small>({{ item.count.toLocaleString() }})</small>
+                  </b-switch>
+                </div>
+              </div>
+            </div>
+          </ais-refinement-list>
+        </ais-instant-search>
+        <!-- <div class="control level-left rare-switch">
+          <div class="level-item is-narrow" v-for="(rare, i) in Object.keys(showRares)" :key="i">
+            <b-switch v-model="showRares[rare]">{{ rare }}</b-switch>
+          </div>
+        </div>-->
+        <div class="control level-right">
+          <div class="level-item"></div>
+        </div>
+      </div>
+      <div class="level is-mobile list-container">
+        <div
+          v-if="showRares[rare]"
+          class="level-item is-narrow list"
+          v-for="(rare, i) in Object.keys(showRares)"
+          :key="i"
+          :class="`list-${rare}`"
+        >
+          <char-name
+            v-for="(char, i) in data.filter(dat =&gt; dat.rare === rare).sort((a, b) =&gt; a.completed - b.completed)"
+            :char="char"
+            :key="i"
+            @click.native="handleClick(char)"
+          ></char-name>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
+import algoliasearch from "algoliasearch/lite";
+
 import { mapState, mapGetters } from "vuex";
 import CharName from "@/components/CharName";
 
@@ -27,6 +77,11 @@ export default {
     return {
       showRares: Object.assign(
         ...this.$store.getters["rares"].map(key => ({ [key]: true }))
+      ),
+      searchResults: [],
+      searchClient: algoliasearch(
+        "KFZDNJLM1A",
+        "da33181b4c2cd6cc8dd868273b4359d3"
       )
     };
   },
@@ -38,16 +93,6 @@ export default {
     handleClick(char) {
       char.completed = !char.completed;
       localStorage.setItem("data", JSON.stringify(this.data));
-    },
-    hanleReset() {
-      if (window.confirm("Are you sure?")) {
-        this.$store.commit("resetData");
-        localStorage.setItem("data", JSON.stringify(this.data));
-        this.$toast.open({
-          message: "Reset Success!",
-          type: "is-success"
-        });
-      }
     }
   }
 };
@@ -59,6 +104,7 @@ export default {
 .rare-switch {
   flex-wrap: wrap;
   max-width: 80%;
+  margin-top: 0.5rem;
 }
 .rare-switch > .level-item {
   margin-bottom: 0.5rem !important;
