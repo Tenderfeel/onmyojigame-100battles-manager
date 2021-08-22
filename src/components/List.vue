@@ -2,55 +2,18 @@
   <div class="section">
     <div class="container">
       <div class="level is-mobile" grouped="grouped" group-multiline="group-multiline">
-        <ais-instant-search :search-client="searchClient" index-name="characters">
-          <ais-autocomplete :class-names="{'ais-Autocomplete': 'control has-icons-left'}">
-            <template slot-scope="{ currentRefinement, indices, refine }">
-              <input
-                class="input"
-                type="search"
-                :value="currentRefinement"
-                placeholder="Search..."
-                autocomplete="off"
-                @input="refine($event.currentTarget.value)"
-              >
-              <span class="icon is-small is-left">
-                <b-icon icon="search" size="is-small"></b-icon>
-              </span>
-            </template>
-          </ais-autocomplete>
-
-          <ais-refinement-list attribute="rare">
-            <div slot-scope="{ items, createURL, refine }">
-              <div class="control level-left rare-switch">
-                <div
-                  class="level-item is-narrow"
-                  v-for="item in items"
-                  :key="item.value"
-                  @click.prevent="refine(item.value)"
-                >
-                  <b-switch v-model="item.isRefined" :class="{'has-text-primary': item.isRefined}">
-                    <span>{{ item.value }}</span>
-                    <small>({{ item.count.toLocaleString() }})</small>
-                  </b-switch>
-                </div>
-              </div>
-            </div>
-          </ais-refinement-list>
-        </ais-instant-search>
-        <!-- <div class="control level-left rare-switch">
+        
+        <div class="control level-left rare-switch">
           <div class="level-item is-narrow" v-for="(rare, i) in Object.keys(showRares)" :key="i">
             <b-switch v-model="showRares[rare]">{{ rare }}</b-switch>
           </div>
-        </div>-->
-        <div class="control level-right">
-          <div class="level-item"></div>
         </div>
+        
       </div>
       <div class="level is-mobile list-container">
         <div
-          v-if="showRares[rare]"
           class="level-item is-narrow list"
-          v-for="(rare, i) in Object.keys(showRares)"
+          v-for="(rare, i) in Object.keys(showRares).filter(rare => showRares[rare])"
           :key="i"
           :class="`list-${rare}`"
         >
@@ -66,7 +29,6 @@
   </div>
 </template>
 <script>
-import algoliasearch from "algoliasearch/lite";
 
 import { mapState, mapGetters } from "vuex";
 import CharName from "@/components/CharName";
@@ -78,11 +40,7 @@ export default {
       showRares: Object.assign(
         ...this.$store.getters["rares"].map(key => ({ [key]: true }))
       ),
-      searchResults: [],
-      searchClient: algoliasearch(
-        "KFZDNJLM1A",
-        "da33181b4c2cd6cc8dd868273b4359d3"
-      )
+      rare: 'N'
     };
   },
   computed: {
